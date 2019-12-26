@@ -19,5 +19,6 @@ module.exports = {
     devServer: {
         watchContentBase: true,
         open:true
-    }
+    },
+    devtool: 'source-map'
   }

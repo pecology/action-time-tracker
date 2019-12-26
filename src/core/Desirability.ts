@@ -1,0 +1,1 @@
+export type Desirability = "Good" | "Neautoral" | "Bad"; 
