@@ -25,7 +25,7 @@ export class ActionElement {
 
         let handle: NodeJS.Timeout;
         buttonTd.onclick = () => {
-            if (this.action.isStart) {
+            if (this.action.isActive) {
                 this.action.stop();
                 button.innerText = "Start";
                 clearInterval(handle)

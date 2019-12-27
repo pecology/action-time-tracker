@@ -2,14 +2,14 @@ export class Duration {
     private _msec: number;
 
     constructor(msec: number);
-    constructor(date1: Date, date2: Date);
-    constructor(msecOrDate: number | Date, date2?: Date) {
-        if (typeof msecOrDate === "number") {
-            this._msec = msecOrDate;
+    constructor(fromDate: Date, toDate: Date);
+    constructor(msecOrFromDate: number | Date, toDate?: Date) {
+        if (typeof msecOrFromDate === "number") {
+            this._msec = msecOrFromDate;
             return;
         }
-        if (date2) {
-            this._msec = date2.getTime() - msecOrDate.getTime();
+        if (toDate) {
+            this._msec = toDate.getTime() - msecOrFromDate.getTime();
             return;
         }
         this._msec = 0;
