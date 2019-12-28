@@ -2935,38 +2935,99 @@ module.exports = g;
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+var DeleteActionDialog_1 = __webpack_require__(/*! ./DeleteActionDialog */ "./src/DeleteActionDialog.ts");
 var ActionElement = /** @class */ (function () {
-    function ActionElement(action) {
+    function ActionElement(_action) {
         var _this = this;
-        this.action = action;
+        this._action = _action;
         this._tr = document.createElement('tr');
-        var clazz = action.desirability;
         var nameTd = document.createElement('td');
-        nameTd.innerText = action.name;
-        nameTd.setAttribute("class", clazz);
+        nameTd.innerText = _action.name;
+        nameTd.setAttribute("class", _action.desirability);
         this._tr.appendChild(nameTd);
         var timeTd = document.createElement('td');
-        timeTd.innerText = action.elapsedTime.toString();
-        timeTd.setAttribute("class", clazz);
+        timeTd.innerText = _action.elapsedTime.toString();
+        timeTd.setAttribute("class", _action.desirability);
         this._tr.appendChild(timeTd);
         var buttonTd = document.createElement('td');
         var button = document.createElement('button');
         button.innerText = "Start";
         buttonTd.appendChild(button);
         this._tr.appendChild(buttonTd);
+        var deleteTd = document.createElement('td');
+        var deleteButton = document.createElement('button');
+        deleteButton.setAttribute("class", "button button-clear");
+        deleteButton.setAttribute("id", "delete-button");
+        deleteButton.textContent = "×";
+        deleteTd.appendChild(deleteButton);
+        this._tr.appendChild(deleteTd);
+        deleteButton.onclick = function () { return __awaiter(_this, void 0, void 0, function () {
+            var deleteActionDialog, event;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        deleteActionDialog = new DeleteActionDialog_1.DeleteActionDialog(_action);
+                        (_a = document.querySelector(".wrapper")) === null || _a === void 0 ? void 0 : _a.appendChild(deleteActionDialog.element);
+                        return [4 /*yield*/, deleteActionDialog.open()];
+                    case 1:
+                        if (_b.sent()) {
+                            event = new Event('ondelete');
+                            this._tr.dispatchEvent(event);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); };
         var handle;
         buttonTd.onclick = function () {
-            if (_this.action.isActive) {
-                _this.action.stop();
+            if (_this._action.isActive) {
+                _this._action.stop();
                 button.innerText = "Start";
                 clearInterval(handle);
             }
             else {
-                _this.action.start();
+                _this._action.start();
                 button.innerText = "Stop";
                 handle = setInterval(function () {
-                    var duration = _this.action.elapsedTime;
+                    var duration = _this._action.elapsedTime;
                     timeTd.innerText = duration.toString();
                 }, 110);
             }
@@ -2978,9 +3039,144 @@ var ActionElement = /** @class */ (function () {
         configurable: true
     });
     ;
+    Object.defineProperty(ActionElement.prototype, "action", {
+        get: function () { return this._action; },
+        enumerable: true,
+        configurable: true
+    });
     return ActionElement;
 }());
 exports.ActionElement = ActionElement;
+
+
+/***/ }),
+
+/***/ "./src/AddActionDialog.ts":
+/*!********************************!*\
+  !*** ./src/AddActionDialog.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Action_1 = __webpack_require__(/*! ./core/Action */ "./src/core/Action.ts");
+var AddActionDialog = /** @class */ (function () {
+    function AddActionDialog() {
+        var templateText = "\n            <div id=\"overlay\" style=\"display:none;\">\n                <div id=\"dialog-wrapper\">\n                    <form id=\"dialog\">\n                        <fieldset>\n                            <label for=\"name-field\">Action name</label>\n                            <input type=\"text\" id=\"action-name-field\">\n                            <label>Desirability</label>\n                            <div>\n                                <input type=\"radio\" name=\"desirability-radio\" class=\"desirability-radio\" id=\"Good\" checked>Good\n                            </div>\n                            <div>\n                                <input type=\"radio\" name=\"desirability-radio\" class=\"desirability-radio\" id=\"Neautoral\">Neautoral\n                            </div>\n                            <div>\n                                <input type=\"radio\" name=\"desirability-radio\" class=\"desirability-radio\" id=\"Bad\">Bad\n                            </div>\n                        </fieldset>\n                        <input type=\"button\" id=\"confirm-button\" value=\"add\">\n                    </form>\n                </div>\n            </div>";
+        this._element = this.stringToElement(templateText);
+    }
+    Object.defineProperty(AddActionDialog.prototype, "element", {
+        get: function () { return this._element; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    AddActionDialog.prototype.doModal = function () {
+        var _this = this;
+        this._element.setAttribute("style", "display:inline");
+        return new Promise(function (res) {
+            // 閉じるイベントハンドラ設定
+            _this._element.addEventListener("click", function (event) {
+                if (event.target.id !== "overlay") {
+                    return false;
+                }
+                _this.close();
+                res(undefined);
+            });
+            // 確認ボタンイベントハンドラ設定
+            _this._element.querySelector("#confirm-button").onclick = function () {
+                var action = _this.createAction();
+                _this.close();
+                res(action);
+            };
+        });
+    };
+    AddActionDialog.prototype.close = function () {
+        this._element.setAttribute("style", "display:none");
+        this._element.remove();
+    };
+    AddActionDialog.prototype.createAction = function () {
+        var _a;
+        var name = document.querySelector("#action-name-field").value;
+        var desirability = (_a = Array.from(document.querySelectorAll('.desirability-radio')).find(function (e) { return e.checked; })) === null || _a === void 0 ? void 0 : _a.getAttribute("id");
+        var trackingLogs = [];
+        var action = Action_1.Action.from({ name: name, desirability: desirability, trackingLogs: trackingLogs });
+        return action;
+    };
+    AddActionDialog.prototype.stringToElement = function (htmlString) {
+        var template = document.createElement('template');
+        htmlString = htmlString.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = htmlString;
+        return template.content.firstChild;
+    };
+    return AddActionDialog;
+}());
+exports.AddActionDialog = AddActionDialog;
+
+
+/***/ }),
+
+/***/ "./src/DeleteActionDialog.ts":
+/*!***********************************!*\
+  !*** ./src/DeleteActionDialog.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var DeleteActionDialog = /** @class */ (function () {
+    function DeleteActionDialog(_targetAction) {
+        this._targetAction = _targetAction;
+        var templateText = "\n            <div id=\"overlay\" style=\"display:none;\">\n                <div id=\"dialog-wrapper\">\n                    <div id=\"dialog\">\n                        <label>Do you want to delete this action?</label>\n                        <input type=\"button\" id=\"delete-yes-button\" value=\"yes\">\n                        <input type=\"button\" id=\"delete-no-button\" value=\"no\">\n                    </div>\n                </div>\n            </div>";
+        this._element = this.stringToElement(templateText);
+    }
+    Object.defineProperty(DeleteActionDialog.prototype, "element", {
+        get: function () { return this._element; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    DeleteActionDialog.prototype.open = function () {
+        var _this = this;
+        this._element.setAttribute("style", "display:inline");
+        return new Promise(function (res) {
+            // 閉じるイベントハンドラ設定
+            _this._element.addEventListener("click", function (event) {
+                if (event.target.id !== "overlay") {
+                    return false;
+                }
+                _this.close();
+                res(undefined);
+            });
+            // yesボタンイベントハンドラ設定
+            _this._element.querySelector("#delete-yes-button").onclick = function () {
+                _this.close();
+                res(_this._targetAction);
+            };
+            // noボタンイベントハンドラ設定
+            _this._element.querySelector("#delete-no-button").onclick = function () {
+                _this.close();
+                res(undefined);
+            };
+        });
+    };
+    DeleteActionDialog.prototype.close = function () {
+        this._element.setAttribute("style", "display:none");
+        this._element.remove();
+    };
+    DeleteActionDialog.prototype.stringToElement = function (htmlString) {
+        var template = document.createElement('template');
+        htmlString = htmlString.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = htmlString;
+        return template.content.firstChild;
+    };
+    return DeleteActionDialog;
+}());
+exports.DeleteActionDialog = DeleteActionDialog;
 
 
 /***/ }),
@@ -3317,8 +3513,9 @@ var localforage_1 = __importDefault(__webpack_require__(/*! localforage */ "./no
 var ActionElement_1 = __webpack_require__(/*! ./ActionElement */ "./src/ActionElement.ts");
 var Action_1 = __webpack_require__(/*! ./core/Action */ "./src/core/Action.ts");
 var VirtueTimeElement_1 = __webpack_require__(/*! ./VirtueTimeElement */ "./src/VirtueTimeElement.ts");
+var AddActionDialog_1 = __webpack_require__(/*! ./AddActionDialog */ "./src/AddActionDialog.ts");
 window.onload = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var actionsJSON, actions, virtueTimeElement;
+    var actionsJSON, actions, virtueTimeElement, addButton;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -3341,9 +3538,17 @@ window.onload = function () { return __awaiter(void 0, void 0, void 0, function 
                         actions.push(new Action_1.Action("ネットサーフィン", "Bad", []));
                 }
                 actions.map(function (a) { return new ActionElement_1.ActionElement(a); })
-                    .forEach(function (e) { var _a; return (_a = document.querySelector("tbody")) === null || _a === void 0 ? void 0 : _a.appendChild(e.tr); });
+                    .forEach(function (e) {
+                    var _a;
+                    (_a = document.querySelector("tbody")) === null || _a === void 0 ? void 0 : _a.appendChild(e.tr);
+                    e.tr.addEventListener("ondelete", function () {
+                        var index = actions.findIndex(function (ele) { return ele === e.action; });
+                        actions.splice(index, 1);
+                        e.tr.remove();
+                    });
+                });
                 virtueTimeElement = new VirtueTimeElement_1.VirtueTimeElement(actions);
-                (_a = document.querySelector(".container")) === null || _a === void 0 ? void 0 : _a.insertBefore(virtueTimeElement.h1, document.querySelector(".container>table"));
+                (_a = document.querySelector(".container")) === null || _a === void 0 ? void 0 : _a.insertBefore(virtueTimeElement.h1, document.querySelector("#add-button"));
                 setInterval(function () { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -3354,6 +3559,26 @@ window.onload = function () { return __awaiter(void 0, void 0, void 0, function 
                         }
                     });
                 }); }, 10000);
+                addButton = document.getElementById("add-button");
+                addButton.onclick = function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var addActionDialog, newAction;
+                    var _a, _b;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
+                            case 0:
+                                addActionDialog = new AddActionDialog_1.AddActionDialog();
+                                (_a = document.querySelector(".wrapper")) === null || _a === void 0 ? void 0 : _a.appendChild(addActionDialog.element);
+                                return [4 /*yield*/, addActionDialog.doModal()];
+                            case 1:
+                                newAction = _c.sent();
+                                if (newAction) {
+                                    actions.push(newAction);
+                                    (_b = document.querySelector("tbody")) === null || _b === void 0 ? void 0 : _b.appendChild(new ActionElement_1.ActionElement(newAction).tr);
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); };
                 return [2 /*return*/];
         }
     });

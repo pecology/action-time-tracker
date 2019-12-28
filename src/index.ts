@@ -3,6 +3,7 @@ import localForage from "localforage";
 import { ActionElement } from "./ActionElement"
 import { Action } from "./core/Action";
 import { VirtueTimeElement } from "./VirtueTimeElement";
+import { AddActionDialog } from "./AddActionDialog";
 
 window.onload = async () => {
     const actionsJSON = await localForage.getItem('actions') as string;
@@ -23,14 +24,31 @@ window.onload = async () => {
     }
 
     actions.map(a => new ActionElement(a))
-        .forEach(e => document.querySelector("tbody")?.appendChild(e.tr));
+            .forEach(e => {
+                document.querySelector("tbody")?.appendChild(e.tr);
+                e.tr.addEventListener("ondelete", () => {
+                    const index = actions.findIndex(ele => ele === e.action);
+                    actions.splice(index, 1);
+                    e.tr.remove();
+                })
+            });
 
 
     const virtueTimeElement = new VirtueTimeElement(actions);
-    document.querySelector(".container")?.insertBefore(virtueTimeElement.h1, document.querySelector(".container>table"));
+    document.querySelector(".container")?.insertBefore(virtueTimeElement.h1, document.querySelector("#add-button"));
 
     setInterval(async () => {
         await localForage.setItem('actions', JSON.stringify(actions));
-    }, 10000)
+    }, 10000);
 
+    const addButton = document.getElementById("add-button") as HTMLButtonElement;
+    addButton.onclick = async () => {
+        const addActionDialog = new AddActionDialog();
+        document.querySelector(".wrapper")?.appendChild(addActionDialog.element);
+        const newAction = await addActionDialog.doModal();
+        if(newAction) {
+            actions.push(newAction);
+            document.querySelector("tbody")?.appendChild(new ActionElement(newAction).tr)
+        }
+    };
 }

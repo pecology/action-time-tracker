@@ -28,12 +28,40 @@
         h1 {
             text-align: center;
         }
+
+        #overlay {
+            background: rgba(0, 0, 0, 0.5);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            position: fixed;
+            z-index: 2;
+        }
+
+        #dialog-wrapper {
+            top: 60px;
+            left: 0;
+            right: 0;
+            width: 980px;
+            position: absolute;
+            border-radius: 8px;
+            background-color: white;
+            margin: 0 auto;
+        }
+
+        #dialog {
+            width: 960px;
+            height: 550px;
+            margin: auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
         <div class="container">
+            <button id="add-button">add</button>
             <table>
                 <thead>
                     <tr>
@@ -46,13 +74,13 @@
                         <th>
                             Start/Stop
                         </th>
+                        <th>delete</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-
     </div>
 
 </body>
