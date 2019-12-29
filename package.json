@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --entory",
+    "build": "webpack --entory --mode production",
     "start-dev-server": "webpack-dev-server"
   },
   "repository": {

@@ -6,7 +6,6 @@ export class VirtueTimeElement {
     constructor(private _actions: Array<Action>) {
         this._h1 = document.createElement('h1');
 
-
         setInterval(() => {
             const virtualTime = this.calcVirtualTime();
             this._h1.innerText = `Virtue Time : ${virtualTime.toString()}`;

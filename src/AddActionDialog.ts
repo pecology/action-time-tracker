@@ -1,6 +1,7 @@
 import { Action } from "./core/Action";
 import { TrackingLog } from "./core/TrackingLog";
-import localForage from "localforage";
+import { ActionElement } from "./ActionElement";
+import { ActionRepository } from "./ActionRepository";
 
 export class AddActionDialog {
     private _element: HTMLElement;
@@ -30,46 +31,47 @@ export class AddActionDialog {
                 </div>
             </div>`;
         this._element = this.stringToElement(templateText);
+        
+        // 閉じるイベントハンドラ設定
+        this._element.addEventListener("click", event => {
+            if ((<HTMLElement>event.target).id !== "overlay") {
+                return false;
+            }
+            this.close();
+        });
+        
+        // 確認ボタンイベントハンドラ設定
+        (this._element.querySelector("#confirm-button") as HTMLElement).onclick = async () => {
+            await this.createAction();
+            this.close();
+        };
+
+        document.body.appendChild(this._element);
     }
 
-    doModal(): Promise<Action | undefined> {
+    show() {
         this._element.setAttribute("style", "display:inline");
-
-        return new Promise(res => {
-            // 閉じるイベントハンドラ設定
-            this._element.addEventListener("click", event => {
-                if ((<HTMLElement>event.target).id !== "overlay") {
-                    return false;
-                }
-                this.close();
-                res(undefined);
-            });
-    
-            // 確認ボタンイベントハンドラ設定
-            (this._element.querySelector("#confirm-button") as HTMLElement).onclick = () => {
-                const action = this.createAction();
-                this.close();
-                res(action);
-            };
-        })
     }
 
     close() {
-        this._element.setAttribute("style", "display:none");
         this._element.remove();
     }
 
-    createAction() {
+    private async createAction() {
         const name = (document.querySelector("#action-name-field") as HTMLInputElement).value;
         const desirability = Array.from(document.querySelectorAll('.desirability-radio')).find(e => (e as HTMLInputElement).checked)?.getAttribute("id") as string;
         const trackingLogs: Array<TrackingLog> = [];
         const action = Action.from({name, desirability, trackingLogs});
-        return action;
+
+        const repository = new ActionRepository();
+        await repository.insert(action);
+
+        document.querySelector("tbody")?.appendChild(new ActionElement(action).tr);
     }
 
     private stringToElement(htmlString: string) {
         const template = document.createElement('template');
-        htmlString = htmlString.trim(); // Never return a text node of whitespace as the result
+        htmlString = htmlString.trim();
         template.innerHTML = htmlString;
         return template.content.firstChild as HTMLElement;
     }

@@ -8,10 +8,12 @@ export class Duration {
             this._msec = msecOrFromDate;
             return;
         }
+        
         if (toDate) {
             this._msec = toDate.getTime() - msecOrFromDate.getTime();
             return;
         }
+
         this._msec = 0;
     }
 
@@ -20,23 +22,15 @@ export class Duration {
     add(msec: number): Duration;
     add(duration: Duration): Duration;
     add(msecOrDuration: number | Duration) {
-        if (typeof msecOrDuration === "number") {
-            const msec = msecOrDuration;
-            return new Duration(this._msec + msec);
-        };
-        const duration = msecOrDuration
-        return new Duration(this._msec + duration._msec);
+        const addMsec = typeof msecOrDuration === "number" ? msecOrDuration : msecOrDuration._msec;
+        return new Duration(this._msec + addMsec);
     }
 
     subtract(msec: number): Duration;
     subtract(duration: Duration): Duration;
     subtract(msecOrDuration: number | Duration) {
-        if (typeof msecOrDuration === "number") {
-            const msec = msecOrDuration;
-            return new Duration(this._msec - msec);
-        };
-        const duration = msecOrDuration
-        return new Duration(this._msec - duration._msec);
+        const subtractMsec = typeof msecOrDuration === "number" ? msecOrDuration : msecOrDuration._msec;
+        return this.add(-subtractMsec);
     }
 
     toString() {

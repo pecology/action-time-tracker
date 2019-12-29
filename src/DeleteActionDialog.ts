@@ -1,10 +1,12 @@
 import { Action } from "./core/Action";
+import { ActionElement } from "./ActionElement";
+import { ActionRepository } from "./ActionRepository";
 
 export class DeleteActionDialog {
     private _element: HTMLElement;
     get element() { return this._element };
 
-    constructor(private _targetAction: Action) {
+    constructor(private _targetActionElement: ActionElement) {
         const templateText = `
             <div id="overlay" style="display:none;">
                 <div id="dialog-wrapper">
@@ -16,37 +18,37 @@ export class DeleteActionDialog {
                 </div>
             </div>`;
         this._element = this.stringToElement(templateText);
+
+        // 閉じるイベントハンドラ設定
+        this._element.addEventListener("click", event => {
+            if ((<HTMLElement>event.target).id !== "overlay") {
+                return false;
+            }
+            this.close();
+        });
+
+        // yesボタンイベントハンドラ設定
+        (this._element.querySelector("#delete-yes-button") as HTMLElement).onclick = async () => {
+            const repository = new ActionRepository();
+            await repository.delete(this._targetActionElement.action);
+            this._targetActionElement.tr.remove();
+
+            this.close();
+        };
+
+        // noボタンイベントハンドラ設定
+        (this._element.querySelector("#delete-no-button") as HTMLElement).onclick = () => {
+            this.close();
+        };
+
+        document.body.appendChild(this._element);
     }
 
-    open(): Promise<Action | undefined> {
+    show() {
         this._element.setAttribute("style", "display:inline");
-
-        return new Promise(res => {
-            // 閉じるイベントハンドラ設定
-            this._element.addEventListener("click", event => {
-                if ((<HTMLElement>event.target).id !== "overlay") {
-                    return false;
-                }
-                this.close();
-                res(undefined);
-            });
-
-            // yesボタンイベントハンドラ設定
-            (this._element.querySelector("#delete-yes-button") as HTMLElement).onclick = () => {
-                this.close();
-                res(this._targetAction);
-            };
-
-            // noボタンイベントハンドラ設定
-            (this._element.querySelector("#delete-no-button") as HTMLElement).onclick = () => {
-                this.close();
-                res(undefined);
-            };
-        })
     }
 
     close() {
-        this._element.setAttribute("style", "display:none");
         this._element.remove();
     }
 

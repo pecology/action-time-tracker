@@ -3,37 +3,39 @@ import { TrackingLog } from "./TrackingLog";
 import { Duration } from "./Duration";
 
 export class Action {
-    private startDate?: Date;
-    private _duration: Duration;
+    private _totalTime: Duration;
     constructor(private _name: string, private _desirability: Desirability, private _trackingLogs: Array<TrackingLog>) {
-        if(_trackingLogs.length === 0) {
-            this._duration = new Duration(0);
-        } else {
-            this._duration = _trackingLogs.map(l => l.duration).reduce((prev, curr) => prev.add(curr));
-        }
+        this._totalTime = _trackingLogs
+            .map(l => l.duration)
+            .reduce((prev, curr) => prev.add(curr), new Duration(0));
     }
 
     get name() { return this._name; }
     get desirability() { return this._desirability; }
-    get isActive() { return !!this.startDate }
+    get isActive() { return !!this.recentLog && !this.recentLog?.end; }
+
+    private get recentLog() { return this._trackingLogs.length === 0 ? null : this._trackingLogs[this._trackingLogs.length - 1]; }
+    private get startTime() { return this.isActive ? this.recentLog?.start : null; }
 
     start() {
-        this.startDate = new Date();
+        const newTrackingLog = new TrackingLog(new Date());
+        this._trackingLogs.push(newTrackingLog);
     }
+
     stop() {
-        if (this.startDate) {
-            this._trackingLogs.push(new TrackingLog(this.startDate, new Date()))
-            this._duration = this.elapsedTime;
-            this.startDate = undefined;
+        if (this.isActive && this.startTime) {
+            const newTrackingLog = new TrackingLog(this.startTime, new Date);
+            this._trackingLogs[this._trackingLogs.length - 1] = newTrackingLog;
+            this._totalTime = this._totalTime.add(newTrackingLog.duration);
         }
     }
 
     get elapsedTime() {
-        if (this.isActive && this.startDate) {
-            const currentDuration = new Duration(this.startDate, new Date())
-            return this._duration.add(currentDuration);
+        if (this.isActive && this.startTime) {
+            const currentDuration = new Duration(this.startTime, new Date())
+            return this._totalTime.add(currentDuration);
         }
-        return this._duration;
+        return this._totalTime;
     }
 
     toJSON() {
@@ -45,14 +47,14 @@ export class Action {
     }
 
     static from(object: any) {
-        if(!object.name || typeof object.name !== "string") {
+        if (!object.name || typeof object.name !== "string") {
             throw new Error('"name" property is invalid.');
         }
-        if(!isDesirability(object.desirability)) {
+        if (!isDesirability(object.desirability)) {
             throw new Error('"desirability" property is invalid.');
         }
 
-        if(!Array.isArray(object.trackingLogs)) {
+        if (!Array.isArray(object.trackingLogs)) {
             throw new Error('"trackingLogs" property is not Array.');
         }
 
