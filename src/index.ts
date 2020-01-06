@@ -30,7 +30,7 @@ window.onload = async () => {
             });
 
     const virtueTimeElement = new VirtueTimeElement(actions);
-    document.querySelector(".container")?.insertBefore(virtueTimeElement.h1, document.querySelector("#add-button"));
+    document.querySelector(".container")?.insertBefore(virtueTimeElement.div, document.querySelector("#add-button"));
 
     const addButton = document.getElementById("add-button") as HTMLButtonElement;
     addButton.onclick = () => {

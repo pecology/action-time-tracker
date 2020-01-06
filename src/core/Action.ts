@@ -13,6 +13,7 @@ export class Action {
     get name() { return this._name; }
     get desirability() { return this._desirability; }
     get isActive() { return !!this.recentLog && !this.recentLog?.end; }
+    get logs() {return this._trackingLogs; }
 
     private get recentLog() { return this._trackingLogs.length === 0 ? null : this._trackingLogs[this._trackingLogs.length - 1]; }
     private get startTime() { return this.isActive ? this.recentLog?.start : null; }

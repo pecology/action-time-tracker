@@ -22,7 +22,7 @@ export class TrackingLog {
         if(this._end) {
             return new Duration(this._start, this._end);
         } else {
-            return new Duration(0);
+            return new Duration(this._start, new Date());
         }
     }
 
